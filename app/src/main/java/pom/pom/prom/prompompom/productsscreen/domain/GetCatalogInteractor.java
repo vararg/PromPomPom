@@ -33,14 +33,15 @@ public class GetCatalogInteractor {
     }
 
     public void execute(Consumer<Collection<ProductViewModel>> onNextProducts,
-                        Consumer<Collection<String>> onNextSorts, Consumer<Throwable> onError, int amount) {
-        Flowable<GetProductsResponse> flowable = getFlowable(amount);
+                        Consumer<Collection<String>> onNextSorts, Consumer<Throwable> onError,
+                        int amount, int offset, String sortType) {
+        Flowable<GetProductsResponse> flowable = getFlowable(amount, offset, sortType);
         compositeDisposable.add(createProductsFlowable(flowable).subscribe(onNextProducts, onError));
         compositeDisposable.add(createSortsFlowable(flowable).subscribe(onNextSorts, onError));
     }
 
-    protected Flowable<GetProductsResponse> createFlowable(Integer amount) {
-        return service.getCatalog(amount);
+    protected Flowable<GetProductsResponse> createFlowable(int amount, int offset, String sortType) {
+        return service.getCatalog(amount, offset, sortType);
     }
 
     protected Flowable<Collection<ProductViewModel>> createProductsFlowable(Flowable<GetProductsResponse> flowable) {
@@ -56,8 +57,8 @@ public class GetCatalogInteractor {
         compositeDisposable.clear();
     }
 
-    private Flowable<GetProductsResponse> getFlowable(int requestModel) {
-        return createFlowable(requestModel)
+    private Flowable<GetProductsResponse> getFlowable(int amount, int offset, String sortType) {
+        return createFlowable(amount, offset, sortType)
                 .subscribeOn(subscribeScheduler)
                 .observeOn(observeScheduler);
     }

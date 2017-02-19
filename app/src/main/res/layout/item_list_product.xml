@@ -21,7 +21,7 @@
             <ImageView
                 android:id="@+id/imageIv"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/product_item_image_height"
+                android:layout_height="@dimen/item_product_image_height"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
@@ -117,7 +117,7 @@
             <Button
                 android:id="@+id/buyBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/product_item_bottom_panel_height"
+                android:layout_height="@dimen/item_product_bottom_panel_height"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"

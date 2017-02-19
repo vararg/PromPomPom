@@ -1,5 +1,8 @@
 package pom.pom.prom.prompompom.productsscreen.presenter;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import java.util.Collection;
 
 import pom.pom.prom.prompompom.productsscreen.domain.GetCatalogInteractor;
@@ -13,8 +16,12 @@ import pom.pom.prom.prompompom.productsscreen.view.ProductsScreenCallbacks;
 
 public class ProductsScreenPresenter {
 
+    public static final String TAG = ProductsScreenPresenter.class.getSimpleName();
+
     private GetCatalogInteractor interactor;
-    private Collection<ProductViewModel> cachedData;
+    private Collection<ProductViewModel> cachedProducts;
+    private Collection<String> cachedSorts;
+    private String cachedSort;
 
     //TODO add router
     private ProductsScreenRouter router;
@@ -27,6 +34,7 @@ public class ProductsScreenPresenter {
 
     public void dropView() {
         this.view = null;
+        onDropView();
     }
 
     protected void onDropView() {
@@ -39,8 +47,12 @@ public class ProductsScreenPresenter {
     }
 
     protected void onTakeView(ProductsScreenCallbacks view) {
-        if (cachedData != null) {
-            view.onProductsReceived(cachedData);
+        if (cachedProducts != null) {
+            view.onProductsReceived(cachedProducts);
+        }
+
+        if (cachedSorts != null && !TextUtils.isEmpty(cachedSort) ) {
+            view.onSortTypesReceived(cachedSorts, cachedSort);
         }
     }
 
@@ -62,35 +74,43 @@ public class ProductsScreenPresenter {
 
     }
 
-    public void fetchData(int count) {
+    public void fetchData(int count, String sortType) {
         view.showProgress();
+        cachedSort = sortType;
         interactor.execute(products ->
                 {
-                    cachedData = products;
                     view.hideProgress();
+                    cachedProducts = products;
                     view.onProductsReceived(products);
                 },
                 sorts -> {
+                    cachedSorts = sorts;
+                    view.onSortTypesReceived(sorts, sortType);
                 },
                 throwable -> {
                     view.hideProgress();
                     view.showError();
-                }, count);
+                    Log.e(TAG, "Error while downloading data", throwable);
+                }, count, 0, sortType);
     }
 
-    public void fetchNewData(int count, int offset) {
+    public void fetchNewData(int count, String sortType, int offset) {
         view.showProgress();
+        cachedSort = sortType;
         interactor.execute(products ->
                 {
-                    cachedData.addAll(products);
                     view.hideProgress();
+                    cachedProducts.addAll(products);
                     view.onNewProductsReceived(products);
                 },
                 sorts -> {
+                    cachedSorts = sorts;
+                    view.onSortTypesReceived(sorts, sortType);
                 },
                 throwable -> {
                     view.hideProgress();
                     view.showError();
-                }, count);
+                    Log.e(TAG, "Error while downloading data", throwable);
+                }, count, offset, sortType);
     }
 }

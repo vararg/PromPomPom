@@ -9,4 +9,8 @@
 
     <!-- Errors -->
     <string name="request_failed">Sorry, we can\'t download data, please check internet connection</string>
+
+    <array name="default_sorts">
+        <item>price</item>
+    </array>
 </resources>

@@ -15,14 +15,16 @@ import retrofit2.Retrofit;
 
 public class ProductService {
 
+    private static final int DEFAULT_CATEGORY_ID = 35402;
+
     private PromService service;
 
     public ProductService(Retrofit retrofit) {
         service = retrofit.create(PromService.class);
     }
 
-    public Flowable<GetProductsResponse> getCatalog(int amount) {
-        return service.getProducts(amount, 0, 35402, "price",
+    public Flowable<GetProductsResponse> getCatalog(int amount, int offset, String sortType) {
+        return service.getProducts(amount, offset, DEFAULT_CATEGORY_ID, sortType,
                 RequestBody.create(MediaType.parse("application/json"),
                         "[{:catalog [:possible_sorts {:results [:id :name :price_currency " +
                         ":discounted_price :price :url_main_image_200x200 ]}]}]"));

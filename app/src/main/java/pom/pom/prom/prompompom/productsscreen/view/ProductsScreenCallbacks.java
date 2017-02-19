@@ -1,5 +1,8 @@
 package pom.pom.prom.prompompom.productsscreen.view;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+
 import java.util.Collection;
 
 import pom.pom.prom.prompompom.productsscreen.domain.ProductViewModel;
@@ -20,4 +23,5 @@ public interface ProductsScreenCallbacks {
 
     void onNewProductsReceived(Collection<ProductViewModel> products);
 
+    void onSortTypesReceived(Collection<String> sorts, String currentSort);
 }
