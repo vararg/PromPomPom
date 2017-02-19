@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Products screen -->
+    <dimen name="item_list_space">8dp</dimen>
+    <dimen name="product_item_image_height">100dp</dimen>
+    <dimen name="product_item_bottom_panel_height">50dp</dimen>
+</resources>
