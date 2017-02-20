@@ -8,7 +8,7 @@
         app:showAsAction="always"
         app:actionViewClass="pom.pom.prom.prompompom.widgets.DynamicWidthSpinner"/>
     <item
-        android:id="@+id/action_favorites"
+        android:id="@+id/action_change_state"
         android:icon="@drawable/ic_filter_list"
         android:title="Item"
         app:showAsAction="always" />

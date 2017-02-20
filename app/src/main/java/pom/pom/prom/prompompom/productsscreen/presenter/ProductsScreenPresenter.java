@@ -8,6 +8,7 @@ import java.util.Collection;
 import pom.pom.prom.prompompom.productsscreen.domain.GetCatalogInteractor;
 import pom.pom.prom.prompompom.productsscreen.domain.ProductViewModel;
 import pom.pom.prom.prompompom.productsscreen.router.ProductsScreenRouter;
+import pom.pom.prom.prompompom.productsscreen.view.ProductScreenViewState;
 import pom.pom.prom.prompompom.productsscreen.view.ProductsScreenCallbacks;
 
 /**
@@ -22,6 +23,7 @@ public class ProductsScreenPresenter {
     private Collection<ProductViewModel> cachedProducts;
     private Collection<String> cachedSorts;
     private String cachedSort;
+    private ProductScreenViewState cachedViewState = ProductScreenViewState.GRID;
 
     //TODO add router
     private ProductsScreenRouter router;
@@ -47,6 +49,9 @@ public class ProductsScreenPresenter {
     }
 
     protected void onTakeView(ProductsScreenCallbacks view) {
+
+        view.onViewStateChanged(cachedViewState);
+
         if (cachedProducts != null) {
             view.onProductsReceived(cachedProducts);
         }
@@ -72,6 +77,11 @@ public class ProductsScreenPresenter {
 
     protected void onTakeRouter(ProductsScreenRouter router) {
 
+    }
+
+    public void changeViewState(ProductScreenViewState currentState) {
+        cachedViewState = getNextState(currentState);
+        view.onViewStateChanged(cachedViewState);
     }
 
     public void fetchData(int count, String sortType) {
@@ -112,5 +122,9 @@ public class ProductsScreenPresenter {
                     view.showError();
                     Log.e(TAG, "Error while downloading data", throwable);
                 }, count, offset, sortType);
+    }
+
+    private ProductScreenViewState getNextState(ProductScreenViewState viewState) {
+        return viewState.next();
     }
 }

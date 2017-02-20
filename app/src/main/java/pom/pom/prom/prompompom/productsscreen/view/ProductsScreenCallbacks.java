@@ -24,4 +24,6 @@ public interface ProductsScreenCallbacks {
     void onNewProductsReceived(Collection<ProductViewModel> products);
 
     void onSortTypesReceived(Collection<String> sorts, String currentSort);
+
+    void onViewStateChanged(ProductScreenViewState newState);
 }

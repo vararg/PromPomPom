@@ -23,19 +23,26 @@ public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.O
     // Sets the starting page index
     private int startingPageIndex = 0;
 
-    RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager layoutManager;
 
-    public EndlessRecyclerViewOnScrollListener(LinearLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
+    public EndlessRecyclerViewOnScrollListener(RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof GridLayoutManager) init((GridLayoutManager) layoutManager);
+        else if (layoutManager instanceof StaggeredGridLayoutManager) init((StaggeredGridLayoutManager) layoutManager);
+        else if (layoutManager instanceof LinearLayoutManager) init((LinearLayoutManager) layoutManager);
+        else throw new IllegalStateException("Unknown layout manager");
     }
 
-    public EndlessRecyclerViewOnScrollListener(GridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
+    private void init(LinearLayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
+    }
+
+    private void init(GridLayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }
 
-    public EndlessRecyclerViewOnScrollListener(StaggeredGridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
+    private void init(StaggeredGridLayoutManager layoutManager) {
+        this.layoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }
 
@@ -58,16 +65,16 @@ public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.O
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
         int lastVisibleItemPosition = 0;
-        int totalItemCount = mLayoutManager.getItemCount();
+        int totalItemCount = layoutManager.getItemCount();
 
-        if (mLayoutManager instanceof StaggeredGridLayoutManager) {
-            int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
+        if (layoutManager instanceof StaggeredGridLayoutManager) {
+            int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(null);
             // get maximum element within the list
             lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions);
-        } else if (mLayoutManager instanceof LinearLayoutManager) {
-            lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager).findLastVisibleItemPosition();
-        } else if (mLayoutManager instanceof GridLayoutManager) {
-            lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager).findLastVisibleItemPosition();
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            lastVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+        } else if (layoutManager instanceof GridLayoutManager) {
+            lastVisibleItemPosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
         }
 
         // If the total item count is zero and the previous isn't, assume the

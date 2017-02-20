@@ -5,19 +5,18 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 import javax.inject.Inject;
 
@@ -44,8 +43,11 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
     private SortTypesAdapter sortsAdapter;
     private String currentSort;
 
+    private ProductScreenViewState currentState;
+
     private OnLoadMoreListener onLoadMoreListener;
     private OnSortChangeListener onSortChangeListener;
+    private OnChangeViewStateListener onChangeViewStateListen;
 
     public ProductsScreenView(Context context) {
         this(context, null);
@@ -66,14 +68,6 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
             ToolbarMenuActivity activity = (ToolbarMenuActivity) getContext();
 
             binding = ScreenProductsBinding.bind(this);
-            GridLayoutManager layoutManager = new GridLayoutManager(activity, 2);
-            binding.recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener(layoutManager) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount) {
-                    onLoadMoreListener.onLoadMore(totalItemsCount);
-                }
-            });
-            binding.recyclerView.setLayoutManager(layoutManager);
 
             initToolbar(activity);
         }
@@ -113,8 +107,16 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
         }
     }
 
+    @Override
+    public void onViewStateChanged(ProductScreenViewState newState) {
+        initList(newState, getContext());
+    }
+
     @Inject
     void setPresenter(ProductsScreenPresenter presenter) {
+
+        onChangeViewStateListen = presenter::changeViewState;
+
         binding.refreshLayout.setOnRefreshListener(
                 () -> presenter.fetchData(DEFAULT_LIST_AMOUNT, sortsSpinner.getSelectedItem().toString()));
 
@@ -131,12 +133,12 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
     }
 
     private void initToolbar(ToolbarMenuActivity activity) {
-
+        //TODO find better solution for init toolbar menu with viper
         activity.setOptionsMenuListener((menuInflater, menu) -> {
             menuInflater.inflate(R.menu.screen_products_toolbar_menu, menu);
 
-            MenuItem item = menu.findItem(R.id.action_sort);
-            sortsSpinner = (Spinner) MenuItemCompat.getActionView(item);
+            MenuItem itemSort = menu.findItem(R.id.action_sort);
+            sortsSpinner = (Spinner) MenuItemCompat.getActionView(itemSort);
 
             sortsSpinner.setAdapter(sortsAdapter);
 
@@ -158,6 +160,12 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
                 }
             });
 
+            MenuItem itemChangeState = menu.findItem(R.id.action_change_state);
+            itemChangeState.setOnMenuItemClickListener(item -> {
+                onChangeViewStateListen.onChangeViewState(currentState);
+                return true;
+            });
+
             return true;
         });
 
@@ -169,11 +177,37 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
         }
     }
 
+    private void initList(ProductScreenViewState viewState, Context context) {
+        RecyclerView.LayoutManager layoutManager;
+
+        currentState = viewState;
+
+        if (viewState == ProductScreenViewState.GRID) layoutManager = new GridLayoutManager(context, 2);
+        else layoutManager = new LinearLayoutManager(context);
+
+        binding.recyclerView.clearOnScrollListeners();
+
+        binding.recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                onLoadMoreListener.onLoadMore(totalItemsCount);
+            }
+        });
+        binding.recyclerView.setLayoutManager(layoutManager);
+        if (productsAdapter != null) {
+            binding.recyclerView.setAdapter(productsAdapter);
+        }
+    }
+
     private interface OnLoadMoreListener {
         void onLoadMore(int offset);
     }
 
     private interface OnSortChangeListener {
         void onSortChanged(String sort);
+    }
+
+    private interface OnChangeViewStateListener {
+        void onChangeViewState(ProductScreenViewState currentState);
     }
 }
