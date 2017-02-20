@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -101,10 +99,7 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
     @Override
     public void onSortTypesReceived(Collection<String> sorts, String currentSort) {
         sortsAdapter.mergeAll(sorts);
-
-        if (sortsSpinner == null) {
-            this.currentSort = currentSort;
-        }
+        this.currentSort = currentSort;
     }
 
     @Override
@@ -118,17 +113,16 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
         onChangeViewStateListen = presenter::changeViewState;
 
         binding.refreshLayout.setOnRefreshListener(
-                () -> presenter.fetchData(DEFAULT_LIST_AMOUNT, sortsSpinner.getSelectedItem().toString()));
+                () -> presenter.fetchData(DEFAULT_LIST_AMOUNT, currentSort));
 
         onSortChangeListener =
                 sort -> presenter.fetchData(DEFAULT_LIST_AMOUNT, sort);
 
-        onLoadMoreListener =
-                offset -> presenter.fetchNewData(DEFAULT_LIST_AMOUNT, sortsSpinner.getSelectedItem().toString(), offset);
+        onLoadMoreListener = offset ->
+                presenter.fetchNewData(DEFAULT_LIST_AMOUNT, currentSort, offset);
 
         productsAdapter = new ProductsAdapter();
-        sortsAdapter = new SortTypesAdapter(binding.getRoot().getContext(),
-                Arrays.asList(binding.getRoot().getContext().getResources().getStringArray(R.array.default_sorts)));
+        sortsAdapter = new SortTypesAdapter(binding.getRoot().getContext());
         binding.recyclerView.setAdapter(productsAdapter);
     }
 
@@ -142,12 +136,7 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
 
             sortsSpinner.setAdapter(sortsAdapter);
 
-            if (!TextUtils.isEmpty(currentSort)) {
-                sortsSpinner.setSelection(sortsAdapter.getPosition(currentSort), false);
-                currentSort = null;
-            }
-
-            //Set listener after setSelection method
+            //Set listener before setSelection method
             sortsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -159,6 +148,9 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
 
                 }
             });
+
+            //Set selection after setOnItemSelectedListener method
+            sortsSpinner.setSelection(sortsAdapter.getPosition(currentSort), false);
 
             MenuItem itemChangeState = menu.findItem(R.id.action_change_state);
             itemChangeState.setOnMenuItemClickListener(item -> {

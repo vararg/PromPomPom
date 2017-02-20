@@ -9,9 +9,11 @@ import pom.pom.prom.prompompom.app.di.Job;
 import pom.pom.prom.prompompom.app.di.Main;
 import pom.pom.prom.prompompom.data.DataModule;
 import pom.pom.prom.prompompom.data.products.ProductService;
+import pom.pom.prom.prompompom.data.sorts.DefaultSortsStorage;
 import pom.pom.prom.prompompom.productsscreen.ProductsScreenActivity;
 import pom.pom.prom.prompompom.productsscreen.domain.GetCatalogInteractor;
 import pom.pom.prom.prompompom.productsscreen.domain.ProductMapper;
+import pom.pom.prom.prompompom.productsscreen.domain.GetSortsInteractor;
 import pom.pom.prom.prompompom.productsscreen.presenter.ProductsScreenPresenter;
 import pom.pom.prom.prompompom.productsscreen.router.ProductsScreenRouter;
 import pom.pom.prom.prompompom.productsscreen.router.ProductsScreenRouterImpl;
@@ -39,8 +41,15 @@ public class ProductsScreenModule {
     @Provides
     @ProductsScreenScope
     static GetCatalogInteractor provideGetCatalogInteractor(@Job Scheduler jobScheduler, @Main Scheduler mainScheduler,
-                                                          ProductService service, ProductMapper mapper) {
+                                                            ProductService service, ProductMapper mapper) {
         return new GetCatalogInteractor(jobScheduler, mainScheduler, service, mapper);
+    }
+
+    @Provides
+    @ProductsScreenScope
+    static GetSortsInteractor provideGetSortsInteractor(@Job Scheduler jobScheduler, @Main Scheduler mainScheduler,
+                                                          DefaultSortsStorage storage) {
+        return new GetSortsInteractor(jobScheduler, mainScheduler, storage);
     }
 
     @Provides
@@ -51,7 +60,8 @@ public class ProductsScreenModule {
 
     @Provides
     @ProductsScreenScope
-    static ProductsScreenPresenter provideMainPresenter(GetCatalogInteractor getCatalogInteractor) {
-        return new ProductsScreenPresenter(getCatalogInteractor);
+    static ProductsScreenPresenter provideMainPresenter(GetCatalogInteractor getCatalogInteractor,
+                                                        GetSortsInteractor getSortsInteractor) {
+        return new ProductsScreenPresenter(getCatalogInteractor, getSortsInteractor);
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import pom.pom.prom.prompompom.R;
 
@@ -22,6 +23,10 @@ public class SortTypesAdapter extends BaseAdapter {
     private ArrayList<String> sortTypes;
 
     private LayoutInflater layoutInflater;
+
+    public SortTypesAdapter(Context context) {
+        this(context, new ArrayList<>());
+    }
 
     public SortTypesAdapter(Context context, Collection<String> sortTypes) {
         super();

@@ -1,5 +1,8 @@
 package pom.pom.prom.prompompom.app.di;
 
+import android.app.Application;
+import android.content.res.Resources;
+
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.Scheduler;
@@ -12,6 +15,17 @@ import io.reactivex.schedulers.Schedulers;
 
 @Module
 public class AppModule {
+
+    private Application application;
+
+    public AppModule(Application application) {
+        this.application = application;
+    }
+
+    @Provides
+    Resources provideResources() {
+        return application.getResources();
+    }
 
     @Provides
     @Main

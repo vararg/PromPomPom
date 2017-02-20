@@ -1,8 +1,5 @@
 package pom.pom.prom.prompompom.productsscreen.view;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-
 import java.util.Collection;
 
 import pom.pom.prom.prompompom.productsscreen.domain.ProductViewModel;

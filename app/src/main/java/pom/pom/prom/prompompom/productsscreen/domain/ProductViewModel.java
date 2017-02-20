@@ -1,10 +1,5 @@
 package pom.pom.prom.prompompom.productsscreen.domain;
 
-import android.databinding.BindingAdapter;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-
 /**
  * Created by vararg on 18.02.2017.
  */
