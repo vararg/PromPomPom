@@ -63,6 +63,8 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (!isInEditMode()) {
+
+            //TODO find better solution for init toolbar menu with viper
             ToolbarMenuActivity activity = (ToolbarMenuActivity) getContext();
 
             binding = ScreenProductsBinding.bind(this);
@@ -187,6 +189,7 @@ public class ProductsScreenView extends ConstraintLayout implements ProductsScre
         });
         binding.recyclerView.setLayoutManager(layoutManager);
         if (productsAdapter != null) {
+            // workaround for correct recyclerview's viewholder reset
             binding.recyclerView.setAdapter(productsAdapter);
         }
     }

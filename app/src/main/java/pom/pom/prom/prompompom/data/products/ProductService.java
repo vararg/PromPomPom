@@ -1,7 +1,5 @@
 package pom.pom.prom.prompompom.data.products;
 
-import android.util.Log;
-
 import io.reactivex.Flowable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;

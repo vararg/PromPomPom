@@ -1,10 +1,6 @@
 package pom.pom.prom.prompompom.productsscreen;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 
 import pom.pom.prom.prompompom.R;
 import pom.pom.prom.prompompom.app.App;

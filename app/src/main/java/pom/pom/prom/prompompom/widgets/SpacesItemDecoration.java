@@ -1,8 +1,6 @@
 package pom.pom.prom.prompompom.widgets;
 
-import android.content.Context;
 import android.graphics.Rect;
-import android.support.annotation.DimenRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
